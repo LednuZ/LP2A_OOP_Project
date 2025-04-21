@@ -1,6 +1,6 @@
 package pouilleux.card;
 
-public enum suits {
+public enum Suits {
 	SPADE,
 	HEART,
 	CLUB,
