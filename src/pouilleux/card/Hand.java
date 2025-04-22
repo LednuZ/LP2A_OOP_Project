@@ -35,6 +35,14 @@ public class Hand {
 		return card;
 	}
 	
+	/**
+	 * delete the designed card
+	 * @param card to be deleted
+	 */
+	protected void deleteCard(Card card)
+	{
+		this.cards.remove(card);
+	}
 	
 	/**
 	 * method used when a player want to pick the index-th card of the hand
