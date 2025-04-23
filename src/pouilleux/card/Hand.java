@@ -79,6 +79,23 @@ public class Hand {
 		}
 	}
 	
+	/**
+	 * Delete a valid pair of two cards
+	 * @param index1 index of the first card in the hand
+	 * @param index2 index of the second card in the hand must be different of index1
+	 */
+	public void deletePair(Card card1, Card card2)
+	{
+		if (card1!=card2 && (this.cards.contains(card1) && this.cards.contains(card2)) ) // Both cards are different and in the hand
+		{
+			if (card1.formPair(card2))
+			{
+				this.cards.remove(card1);
+				this.cards.remove(card2);
+			}
+		}
+	}
+	
 	
 	/**
 	 * Add a single card
