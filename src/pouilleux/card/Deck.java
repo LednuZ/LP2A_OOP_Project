@@ -18,7 +18,7 @@ public class Deck extends Hand{
 		}
 		
 		// Deleting the Spade's Jack
-		this.deleteCard(new Card(12, Suits.SPADE));
+		this.deleteCard(new Card(12, Suits.SPADE)); // value 12 -> jack
 	}
 	
 	
