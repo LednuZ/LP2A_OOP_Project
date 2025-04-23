@@ -22,6 +22,12 @@ public class Player {
 		return this.name;
 	}
 	
+	/**
+	 * Let the player pick the index-th card on another player
+	 * @param leftPlayer other player who will "lost" his card
+	 * @param index index of the card from the other player
+	 * @return true if the action is complete, false otherwise
+	 */
 	public boolean pickCard(Player leftPlayer, int index)
 	{
 		boolean actionDone = false;
@@ -32,5 +38,15 @@ public class Player {
 			actionDone = true;
 		}
 		return actionDone;
+	}
+	
+	
+	/**
+	 * Get the count of possessed cards
+	 * @return an int corresponding to the number of its cards
+	 */
+	public int getCardCount()
+	{
+		return this.hand.getCount();
 	}
 }
