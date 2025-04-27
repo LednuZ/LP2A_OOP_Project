@@ -1,5 +1,6 @@
 package pouilleux.game;
 import java.util.ArrayList ;
+import java.util.Random;
 
 import pouilleux.players.*;
 import pouilleux.card.*;
@@ -34,6 +35,11 @@ public class Game {
 	 * Select a random dealer to start the game 
 	 */
 	public void selectRandomDealer() {
+        Random random = new Random();
+        int first_player = random.nextInt(5); 
+
+
+
 
     }
 
@@ -41,10 +47,23 @@ public class Game {
 
 
     	/**
-	 * Returns true if the only card in play is the jack of spades
+	 * Returns true if the only card in play is the jack of spades or 3 players are finished
 	 * @return a boolean value
 	 */
 	public boolean isFinished() {
+        int count = 0 ; 
+        boolean returnedValue = false ; 
+        for (Player player : players) {   
+            if (player.getHand().isEmpty()){
+                count ++ ; 
+            }
+        }
+        if (count ==3){
+            returnedValue = true;
+        }
 
-	}
+        return returnedValue ;       
+
+    } 
+
 }
