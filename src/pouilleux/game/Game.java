@@ -1,6 +1,7 @@
 package pouilleux.game;
 import java.util.ArrayList ;
 import java.util.Random;
+import java.util.Scanner;
 
 import pouilleux.players.*;
 import pouilleux.card.*;
@@ -36,11 +37,23 @@ public class Game {
 	public void selectRandomDealer() {
         Random random = new Random();
         int first_player = random.nextInt(5); 
+        int next_player = (first_player+1)%4 ; 
+        int hand_size = players.get(first_player).getHand().getCount() ;
+        if(players.get(next_player) instanceof Bot) {   //if the dealer is the bot 
+            players.get(first_player).pickCard(players.get(next_player), random.nextInt(hand_size)) ; 
 
-        
-        
-        
-        
+        }
+        else {  //if it's the player
+        	try (Scanner scanner = new Scanner(System.in)) {
+        		int pick_index = -1 ; 
+        		while (pick_index < 0 || pick_index >= hand_size) {
+					System.out.println("Write a number between 1 and "+ hand_size +": ");
+					pick_index = scanner.nextInt();
+        		}
+				players.get(first_player).pickCard(players.get(next_player),pick_index) ;
+			} 
+
+        }
         
     }
 	
