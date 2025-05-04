@@ -49,4 +49,12 @@ public class Player {
 	{
 		return this.hand.getCount();
 	}
+	
+	/**
+	 * Get the statue of the player (if finish or not)
+	 * @return true if the player has not any card
+	 */
+	public boolean hasFinished() {
+		return this.getHand().getCount() ==0 ; 
+	}
 }

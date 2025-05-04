@@ -36,25 +36,8 @@ public class Game {
 	*/
 	public void selectRandomDealer() {
         Random random = new Random();
-        int first_player = random.nextInt(5); 
-        int next_player = (first_player+1)%4 ; 
-        int hand_size = players.get(first_player).getHand().getCount() ;
-        if(players.get(next_player) instanceof Bot) {   //if the dealer is the bot 
-            players.get(first_player).pickCard(players.get(next_player), random.nextInt(hand_size)) ; 
+        this.currentPlayer = random.nextInt(5); 
 
-        }
-        else {  //if it's the player
-        	try (Scanner scanner = new Scanner(System.in)) {
-        		int pick_index = -1 ; 
-        		while (pick_index < 0 || pick_index >= hand_size) {
-					System.out.println("Write a number between 1 and "+ hand_size +": ");
-					pick_index = scanner.nextInt();
-        		}
-				players.get(first_player).pickCard(players.get(next_player),pick_index) ;
-			} 
-
-        }
-        
     }
 	
 	/**
@@ -65,7 +48,7 @@ public class Game {
         int count = 0 ; 
         boolean returnedValue = false ; 
         for (Player player : players) {   
-            if (player.getHand().isEmpty()){
+            if (player.hasFinished()){
                 count ++ ; 
             }
         }
@@ -76,5 +59,56 @@ public class Game {
         return returnedValue ;       
 
     } 
+	
+    /**
+	* Play a turn 
+	*/
+	public void playTurn() {
+		selectRandomDealer() ; 
+        Random random = new Random();
+		while (!isFinished()) {
+        	if(!players.get(this.currentPlayer).hasFinished()) {
+				int hand_size = players.get(this.leftPlayer()).getHand().getCount() ;
+		        if(players.get(this.currentPlayer) instanceof Bot) {   //if the current player is a bot 
+		            players.get(this.currentPlayer).pickCard(players.get(leftPlayer()), random.nextInt(hand_size)) ; 
+		            ((Bot)players.get(currentPlayer)).deleteAllPairs() ; 
+		        }
+		        else {  //if it's the player
+		        	try (Scanner scanner = new Scanner(System.in)) {
+		        		int pick_index = -1 ; 
+		        		while (pick_index < 0 || pick_index >= hand_size) {
+							System.out.println("Choose a number between 1 and "+ hand_size +": ");
+							pick_index = scanner.nextInt();
+		        		}
+						players.get(this.currentPlayer).pickCard(players.get(leftPlayer()),pick_index) ;
+						//ajouter la vérification des pairs pour le joueur 
+					} 
+	
+		        }
+        	}
+	        this.currentPlayer = this.nextPlayer() ; 
+		}
+		
+	}
+	
+    /**
+	* give the player at the left 
+	* @return the player at the left of the current player
+	*/
+	public int leftPlayer() {
+		return (this.currentPlayer-1)%4 ;
+		
+	}
+
+    /**
+	* give the next player 
+	* @return the player at the right of the current player
+	*/
+	public int nextPlayer() {
+		return (this.currentPlayer+1)%4 ;
+		
+	}
+	
+	
 
 }

@@ -38,4 +38,13 @@ public class Bot extends Player{
 		
 		// we end the turn
 	}
+	
+	
+	/**
+	 * Delete all the pairs of the bot automatically
+	 */
+	public void deleteAllPairs() {
+		
+		
+	}
 }
