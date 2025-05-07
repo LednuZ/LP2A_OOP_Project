@@ -36,12 +36,12 @@ public class Game {
 	*/
 	public void selectRandomDealer() {
         Random random = new Random();
-        this.currentPlayer = random.nextInt(5); 
+        this.currentPlayer = random.nextInt(4); 
 
     }
 	
 	/**
-	 * Returns true if the only card in play is the jack of spades or 3 players are finished
+	 * Returns true if the only card in play is the jack of spades and 3 players finished
 	 * @return a boolean value
 	 */
 	public boolean isFinished() {
@@ -61,9 +61,9 @@ public class Game {
     } 
 	
     /**
-	* Play a turn 
+	* Play a game 
 	*/
-	public void playTurn() {
+	public void startGame() {
 		selectRandomDealer() ; 
         Random random = new Random();
 		while (!isFinished()) {

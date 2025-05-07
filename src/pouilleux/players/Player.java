@@ -51,7 +51,7 @@ public class Player {
 	}
 	
 	/**
-	 * Get the statue of the player (if finish or not)
+	 * Get the state of the player (if finish or not)
 	 * @return true if the player has not any card
 	 */
 	public boolean hasFinished() {
