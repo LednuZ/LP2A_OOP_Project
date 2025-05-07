@@ -68,9 +68,9 @@ public class Game {
         Random random = new Random();
 		while (!isFinished()) {
         	if(!players.get(this.currentPlayer).hasFinished()) {
-				int hand_size = players.get(this.leftPlayer()).getHand().getCount() ;
+				int hand_size = players.get(this.nextPlayer()).getCardCount() ;
 		        if(players.get(this.currentPlayer) instanceof Bot) {   //if the current player is a bot 
-		            players.get(this.currentPlayer).pickCard(players.get(leftPlayer()), random.nextInt(hand_size)) ; 
+		            players.get(this.currentPlayer).pickCard(players.get(nextPlayer()), random.nextInt(hand_size)) ; 
 		            ((Bot)players.get(currentPlayer)).deleteAllPairs() ; 
 		        }
 		        else {  //if it's the player
@@ -80,7 +80,7 @@ public class Game {
 							System.out.println("Choose a number between 1 and "+ hand_size +": ");
 							pick_index = scanner.nextInt();
 		        		}
-						players.get(this.currentPlayer).pickCard(players.get(leftPlayer()),pick_index) ;
+						players.get(this.currentPlayer).pickCard(players.get(nextPlayer()),pick_index) ;
 						//ajouter la vérification des pairs pour le joueur 
 					} 
 	
@@ -91,21 +91,18 @@ public class Game {
 		
 	}
 	
-    /**
-	* give the player at the left 
-	* @return the player at the left of the current player
-	*/
-	public int leftPlayer() {
-		return (this.currentPlayer-1)%4 ;
-		
-	}
 
     /**
-	* give the next player 
+	* give the next player still in game
 	* @return the player at the right of the current player
 	*/
 	public int nextPlayer() {
-		return (this.currentPlayer+1)%4 ;
+		int leftPlayer = (this.currentPlayer+1)%4; 
+		while (players.get(leftPlayer).hasFinished())
+		{
+			leftPlayer = (leftPlayer + 1) %4;
+		}
+		return leftPlayer;
 		
 	}
 	
