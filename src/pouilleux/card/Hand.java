@@ -125,4 +125,14 @@ public class Hand {
 	{
 		return this.cards.size();
 	}
+	
+	public String toString()
+	{
+		String returnedString = "";
+		for (Card card : cards)
+		{
+			returnedString += card.toString()+"\n";
+		}
+		return returnedString;
+	}
 }

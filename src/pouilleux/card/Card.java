@@ -98,5 +98,9 @@ public class Card {
 		return (this.hasSameValue(card2) && this.isSameColor(card2));
 	}
 	
+	public String toString()
+	{
+		return this.getSuit() + this.value;
+	}
 	
 }
