@@ -70,15 +70,14 @@ public class Game {
         	if(!players.get(this.currentPlayer).hasFinished()) {
 				int hand_size = players.get(this.nextPlayer()).getCardCount() ;
 		        if(players.get(this.currentPlayer) instanceof Bot) {   //if the current player is a bot 
-		            players.get(this.currentPlayer).pickCard(players.get(nextPlayer()), random.nextInt(hand_size)) ; 
-		            ((Bot)players.get(currentPlayer)).deleteAllPairs() ; 
+		            ((Bot)players.get(currentPlayer)).playTurn(this.players.get(this.nextPlayer())) ; 
 		        }
-		        else {  //if it's the player
+		        else {  //if the player is human
 		        	try (Scanner scanner = new Scanner(System.in)) {
 		        		int pick_index = -1 ; 
 		        		while (pick_index < 0 || pick_index >= hand_size) {
 							System.out.println("Choose a number between 1 and "+ hand_size +": ");
-							pick_index = scanner.nextInt();
+							pick_index = scanner.nextInt() -1;
 		        		}
 						players.get(this.currentPlayer).pickCard(players.get(nextPlayer()),pick_index) ;
 						//ajouter la vérification des pairs pour le joueur 
@@ -102,7 +101,7 @@ public class Game {
 		{
 			leftPlayer = (leftPlayer + 1) %4;
 		}
-		return leftPlayer;
+		return leftPlayer ;
 		
 	}
 	
