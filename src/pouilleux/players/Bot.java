@@ -12,7 +12,7 @@ public class Bot extends Player{
 		super(name);
 	}
 	
-	public boolean playTurn(Player leftPlayer)
+	public void playTurn(Player leftPlayer)
 	{
 		// We search all the pairs to delete them
 		ArrayList<Card[]> foundPairs = new ArrayList<Card[]>();
@@ -31,20 +31,26 @@ public class Bot extends Player{
 			this.hand.deletePair(pair[0], pair[1]);
 		}
 		
-		//Now we want to play a turn
-		
-		//We choose a rnd card to pick form the player to the left
-		
-		
-		// we end the turn
-	}
-	
-	
-	/**
-	 * Delete all the pairs of the bot automatically
-	 */
-	public void deleteAllPairs() {
+		//Now the bot to play a turn (pick a card form the left player)
+		int cardCount = leftPlayer.getCardCount();
+		this.pickCard(leftPlayer, rnd.nextInt(cardCount));
 		
 		
+		/** We suppress the pair if he picked a good card
+		 Since the picked card is added to the end of hand, we only need to compare all the cards
+		 for the first to the n-1 card with the last card
+		**/
+		boolean foundPair = false;
+		int index = 0; 
+		while (!foundPair && index < this.getCardCount()-1) 
+		{
+			if (this.hand.getCard(index).formPair(this.hand.getCard(this.getCardCount() - 1))) {
+				this.getHand().deletePair(index, this.getCardCount()-1);;
+				foundPair = true;
+			}
+			else index+=1;
+		}
+		
+		// Turn ended
 	}
 }
