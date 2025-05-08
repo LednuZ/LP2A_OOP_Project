@@ -12,6 +12,8 @@ public class Bot extends Player{
 		super(name);
 	}
 	
+	
+	@Override
 	public void playTurn(Player leftPlayer)
 	{
 		// We search all the pairs to delete them

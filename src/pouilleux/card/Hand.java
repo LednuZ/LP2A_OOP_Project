@@ -129,9 +129,11 @@ public class Hand {
 	public String toString()
 	{
 		String returnedString = "";
+		int index = 0;
 		for (Card card : cards)
 		{
-			returnedString += card.toString()+"\n";
+			returnedString += index + " : " + card.toString()+"\n";
+			index ++;
 		}
 		return returnedString;
 	}
