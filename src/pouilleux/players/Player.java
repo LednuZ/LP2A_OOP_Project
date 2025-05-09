@@ -86,15 +86,54 @@ public class Player {
     		if (choice == 1) 
     		{	
     			int card1, card2 = -1;
+    			boolean secondCard = false;
     			boolean pairMode = true;
     			while (pairMode)
     			{
-    				System.out.println("Card selection for a pair : \n"
-    						+ "Type \"-1\" if you want to pick a card\n"
+    				System.out.println("Card selection for a pair : \n" // first card
+    						+ "Type \"-1\" if you want to pick a card from the player to your left\n"
     						+ "Otherwise, type the index number of the first card");
-    				if (scanner.hasNextInt()) {
-    					choice = scanner.nextInt();
-    				} else {
+    				System.out.println(this.getHand().toString());
+    				
+    				if (scanner.hasNextInt()) { // valid entry (integer)
+    					card1 = scanner.nextInt();
+    					if (card1 == -1) pairMode = false; // stop if -1
+    					else if (card1 < this.getCardCount() && card1 >= 0)
+    					{
+    						secondCard = true;
+    						while(!secondCard) {
+    							System.out.println("Your first card is n°"+card1); //second card
+    							System.out.println("Please select the second card index to constitute a pair");
+    							System.out.println(this.getHand().toString());
+    							if (scanner.hasNextInt()) {
+    		    					card2 = scanner.nextInt();
+    		    					secondCard = true;
+    		    					if (this.getHand().deletePair(card1, card2)) {
+    		    						System.out.println("Pair discarded");
+    		    					}
+    		    					else
+			    					{
+			    						System.out.println("Not a valid pair, try again");
+			    					}
+    							}
+    							
+    							
+    							else {
+    								System.out.println("Invalid input. Please try again.");
+    		    					System.out.println();
+    		    					scanner.nextLine();
+    							}
+    							
+    						}
+    						
+    					}
+    					else {
+    						System.out.println("Card index out of range, max can be "+ (this.getCardCount() -1));
+    					}
+    					
+    				}
+    				
+    				else { // invalid entry
     					System.out.println("Invalid input. Please try again.");
     					System.out.println();
     					scanner.nextLine();
@@ -107,18 +146,85 @@ public class Player {
     		// -----------------------------
     		// player picks a card
     		int pick_index = -1 ; 
-    		while (pick_index < 0 || pick_index >= hand_size) {
-				System.out.println("Choose a number between 1 and "+ hand_size +": ");
+    		while (pick_index < 0 || pick_index >= leftPlayer.getCardCount()) {
+				System.out.println("Choose a number between 1 and "+ leftPlayer.getCardCount() +": ");
 				pick_index = scanner.nextInt() -1;
     		}
-			players.get(this.currentPlayer).pickCard(players.get(nextPlayer()),pick_index) ;
+			this.pickCard(leftPlayer,pick_index) ;
 			
 			
 			// ----------------------------
 			// last Pair deleting phase
 			// ----------------------------
 			
+			int card1, card2 = -1;
+			boolean secondCard = false;
+			boolean pairMode = true;
+			while (pairMode)
+			{
+				System.out.println("Card selection for a pair : \n" // first card
+						+ "Type \"-1\" if you want to end your turn\n"
+						+ "Otherwise, type the index number of the first card");
+				System.out.println(this.getHand().toString());
+				
+				if (scanner.hasNextInt()) { // valid entry (integer)
+					card1 = scanner.nextInt();
+					if (card1 == -1) pairMode = false; // stop if -1
+					
+					
+					//verifying if card1 is in range
+					else if (card1 < this.getCardCount() && card1 >= 0) 
+					{
+						while(!secondCard) {
+							System.out.println("Your first card is n°"+card1); //second card
+							System.out.println("Please select the second card index to constitute a pair");
+							System.out.println(this.getHand().toString());
+							if (scanner.hasNextInt()) { // valid entry (integer)
+		    					card2 = scanner.nextInt();
+		    					
+		    					// verifying if card1 is in range
+		    					if (card2 >= 0 && card2 < this.getCardCount())
+		    					{
+			    					secondCard = true;
+			    					boolean valid  = false;
+			    				
+			    					if (this.getHand().deletePair(card1, card2)) { // the validity of the pair matters since we can only discard one pair
+			    						pairMode = false;
+			    						System.out.println("Pair discarded");
+			    					}
+			    					else
+			    					{
+			    						System.out.println("Not a valid pair, try again");
+			    					}
+								}
+			    				else {
+			    					System.out.println("Card index out of range, max can be "+ (this.getCardCount() -1));
+			    				}
+							}
+							
+							
+							else { // invalid entry (not an integer)
+								System.out.println("Invalid input. Please try again.");
+		    					System.out.println();
+		    					scanner.nextLine();
+							}
+							
+						}
+						
+					}
+					else {
+						System.out.println("Card index out of range, max can be "+ (this.getCardCount() -1));
+					}
+					
+				}
+				else {
+					System.out.println("Invalid input. Please try again.");
+					System.out.println();
+					scanner.nextLine();
+				}
+			}
 			
+			System.out.println("End of turn");
 			
 		} 
 	}

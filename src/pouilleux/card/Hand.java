@@ -65,8 +65,9 @@ public class Hand {
 	 * @param index1 index of the first card in the hand
 	 * @param index2 index of the second card in the hand must be different of index1
 	 */
-	public void deletePair(int index1, int index2)
+	public boolean deletePair(int index1, int index2)
 	{
+		boolean returnedValue = false;
 		if (index1 < this.getCount() && index2 < this.getCount() && index1 != index2) // index1 and index2 aren't out of range
 		{
 			Card card1 = this.getCard(index1);
@@ -75,8 +76,10 @@ public class Hand {
 			{
 				this.cards.remove(card1);
 				this.cards.remove(card2);
+				returnedValue = true;
 			}
 		}
+		return returnedValue;
 	}
 	
 	/**
@@ -84,16 +87,19 @@ public class Hand {
 	 * @param index1 index of the first card in the hand
 	 * @param index2 index of the second card in the hand must be different of index1
 	 */
-	public void deletePair(Card card1, Card card2)
+	public boolean deletePair(Card card1, Card card2)
 	{
+		boolean returnedValue = false;
 		if (card1!=card2 && (this.cards.contains(card1) && this.cards.contains(card2)) ) // Both cards are different and in the hand
 		{
 			if (card1.formPair(card2))
 			{
 				this.cards.remove(card1);
 				this.cards.remove(card2);
+				returnedValue = true;
 			}
 		}
+		return returnedValue;
 	}
 	
 	
