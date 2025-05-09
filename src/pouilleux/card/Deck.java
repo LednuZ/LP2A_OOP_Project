@@ -16,9 +16,10 @@ public class Deck extends Hand{
 				this.addCard(new Card(i, suit));
 			}
 		}
-		
-		// Deleting the Spade's Jack
+		System.out.println(this.toString());
+		// Deleting the Club's Jack
 		this.deleteCard(new Card(11, Suits.CLUB)); // value 11 -> jack
+		System.out.println(this.toString());
 	}
 	
 	

@@ -103,4 +103,10 @@ public class Card {
 		return this.value + " " + this.getSuit();
 	}
 	
+	
+	public boolean equals(Card card)
+	{
+		return (this.getSuit().equals(card.getSuit()) && this.getValue() == card.getValue());
+	}
+	
 }

@@ -39,9 +39,20 @@ public class Hand {
 	 * delete the designed card
 	 * @param card to be deleted
 	 */
-	protected void deleteCard(Card card)
+	protected void deleteCard(Card card2)
 	{
-		this.cards.remove(card);
+		boolean found = false;
+		int i = 0;
+		int index = 0;
+		for (Card card : this.cards) {
+			if (card.equals(card2)) {
+				index = i; 
+			}
+			i++;
+		}
+		if (index >= 0) {
+			this.cards.remove(index);
+		}
 	}
 	
 	/**

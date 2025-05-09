@@ -22,9 +22,11 @@ public class Game {
 	
 	    //distributing the cards 
 	    while (!deck.isEmpty()){
-	        for (Player player : players) {               
-	            Card card = deck.drawCard() ;
-	            player.getHand().addCard(card) ; 
+	        for (Player player : players) {   
+	        	if (!deck.isEmpty()) {
+		            Card card = deck.drawCard() ;
+		            player.getHand().addCard(card) ; 
+	        	}
 	        } 
 	    }
 
