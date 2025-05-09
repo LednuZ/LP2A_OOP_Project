@@ -12,10 +12,8 @@ public class Bot extends Player{
 		super(name);
 	}
 	
-	
 	@Override
-	public void playTurn(Player leftPlayer)
-	{
+	public void discardPairs() { 
 		// We search all the pairs to delete them
 		ArrayList<Card[]> foundPairs = new ArrayList<Card[]>();
 		for (int i=0; i<this.getCardCount() - 1;i++)
@@ -32,8 +30,14 @@ public class Bot extends Player{
 		for (Card[] pair : foundPairs) {
 			this.hand.deletePair(pair[0], pair[1]);
 		}
-		
-		//Now the bot to play a turn (pick a card form the left player)
+	}
+	
+	
+	
+	@Override
+	public void playTurn(Player leftPlayer)
+	{
+		// play a turn (pick a card form the left player)
 		int cardCount = leftPlayer.getCardCount();
 		this.pickCard(leftPlayer, rnd.nextInt(cardCount));
 		

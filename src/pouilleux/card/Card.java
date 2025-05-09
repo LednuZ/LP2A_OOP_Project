@@ -100,7 +100,7 @@ public class Card {
 	
 	public String toString()
 	{
-		return this.getSuit() + this.value;
+		return this.value + " " + this.getSuit();
 	}
 	
 }

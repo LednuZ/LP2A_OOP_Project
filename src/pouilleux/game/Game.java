@@ -1,14 +1,13 @@
 package pouilleux.game;
 import java.util.ArrayList ;
 import java.util.Random;
-import java.util.Scanner;
 
 import pouilleux.players.*;
 import pouilleux.card.*;
 
 
 public class Game {
-    ArrayList<Player> players ;
+    ArrayList<Player> players = new ArrayList<Player>();
     private int currentPlayer ;
 
     public Game(String name ){
@@ -64,7 +63,25 @@ public class Game {
 	* Play a game 
 	*/
 	public void startGame() {
-		selectRandomDealer() ; 
+		selectRandomDealer() ;
+		// ------------------------
+		//Phase 1
+		// ------------------------
+		
+		System.out.println("First Phase !!");
+		System.out.println();
+		
+		for (Player player : this.players) 
+		{
+			player.discardPairs();
+		}
+		
+		
+		System.out.println("Second Phase !!");
+		System.out.println();
+		// ------------------------
+		// Phase 2
+		// ------------------------
 		while (!isFinished()) {
         	if(!players.get(this.currentPlayer).hasFinished()) {
         		System.out.println("It's the turn of the player "+ players.get(currentPlayer).getName() + " !!");
