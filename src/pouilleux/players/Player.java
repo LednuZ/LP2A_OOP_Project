@@ -84,7 +84,7 @@ public class Player {
 	    					card2 = scanner.nextInt();
 	    					secondCard = true;
 	    					if (this.getHand().deletePair(card1, card2)) {
-	    						System.out.println("Pair "+ this.hand.getAllCards().get(card1) + " and " +this.hand.getAllCards().get(card2)+" discarded");
+	    						System.out.println("Pair : "+ this.hand.getAllCards().get(card1) + " and " +this.hand.getAllCards().get(card2)+" discarded");
 	    					}
 	    					else
 	    					{
