@@ -63,7 +63,7 @@ public class Player {
 		int card1, card2 = -1;
 		boolean secondCard = false;
 		boolean pairMode = true;
-		while (pairMode)
+		while (pairMode && this.getCardCount() > 1)
 		{
 			System.out.println("\n\nCard selection for a pair : \n" // first card
 					+ "Type \"-1\" if you have finished\n"
@@ -84,7 +84,7 @@ public class Player {
 	    					card2 = scanner.nextInt();
 	    					secondCard = true;
 	    					if (this.getHand().deletePair(card1, card2)) {
-	    						System.out.println("Pair discarded");
+	    						System.out.println("Pair "+ this.hand.getAllCards().get(card1) + " and " +this.hand.getAllCards().get(card2)+" discarded");
 	    					}
 	    					else
 	    					{
@@ -116,6 +116,10 @@ public class Player {
 					scanner.nextLine();
 				}    				
 			}
+		}
+		if (this.getCardCount() == 0)
+		{
+			System.out.println("\n\nYou won !!!\n\n");
 		}
 	}
 	

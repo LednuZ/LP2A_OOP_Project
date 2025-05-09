@@ -41,7 +41,6 @@ public class Hand {
 	 */
 	protected void deleteCard(Card card2)
 	{
-		boolean found = false;
 		int i = 0;
 		int index = 0;
 		for (Card card : this.cards) {
@@ -89,6 +88,8 @@ public class Hand {
 				this.cards.remove(card2);
 				returnedValue = true;
 			}
+			System.out.println("Pair "+ card1.toString() + " and " +card2.toString()+" discarded");
+
 		}
 		return returnedValue;
 	}

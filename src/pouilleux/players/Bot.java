@@ -57,6 +57,11 @@ public class Bot extends Player{
 			else index+=1;
 		}
 		
+		if (this.getCardCount() == 0) 
+		{
+			System.out.println();
+		}
+		
 		// Turn ended
 	}
 }

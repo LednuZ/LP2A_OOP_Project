@@ -88,6 +88,10 @@ public class Game {
         	if(!players.get(this.currentPlayer).hasFinished()) {
         		System.out.println("It's the turn of the player "+ players.get(currentPlayer).getName() + " !!");
 		        players.get(currentPlayer).playTurn(this.players.get(this.nextPlayer())) ; 
+        		System.out.println("Player "+ players.get(currentPlayer).getName() + " has " + players.get(currentPlayer).getCardCount()+ " now");
+        		System.out.println("");
+
+
 		        
         	}
 	        this.currentPlayer = this.nextPlayer() ; 
