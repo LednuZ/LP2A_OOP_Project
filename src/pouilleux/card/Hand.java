@@ -110,6 +110,8 @@ public class Hand {
 				this.cards.remove(card2);
 				returnedValue = true;
 			}
+			System.out.println("Pair "+ card1.toString() + " and " +card2.toString()+" discarded");
+
 		}
 		return returnedValue;
 	}

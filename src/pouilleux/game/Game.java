@@ -88,7 +88,7 @@ public class Game {
         	if(!players.get(this.currentPlayer).hasFinished()) {
         		System.out.println("It's the turn of the player "+ players.get(currentPlayer).getName() + " !!");
 		        players.get(currentPlayer).playTurn(this.players.get(this.nextPlayer())) ; 
-        		System.out.println("Player "+ players.get(currentPlayer).getName() + " has " + players.get(currentPlayer).getCardCount()+ " now");
+        		System.out.println("Player "+ players.get(currentPlayer).getName() + " has " + players.get(currentPlayer).getCardCount()+ " cards");
         		System.out.println("");
 
 
@@ -96,6 +96,33 @@ public class Game {
         	}
 	        this.currentPlayer = this.nextPlayer() ; 
 		}
+		
+	}
+	
+	
+	public void startGameUI() // method that doesn't "block" the UI
+	{
+		selectRandomDealer() ;
+		// ------------------------
+		//Phase 1
+		// ------------------------
+		
+		System.out.println("First Phase !!");
+		System.out.println();
+		
+		for (Player player : this.players) 
+		{
+			player.discardPairs();
+		}
+		
+		
+		System.out.println("Second Phase !!");
+		System.out.println();
+		// ------------------------
+		// Phase 2
+		// ------------------------
+		
+		
 		
 	}
 	
