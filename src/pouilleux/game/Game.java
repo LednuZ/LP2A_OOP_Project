@@ -102,28 +102,7 @@ public class Game {
 	
 	public void startGameUI() // method that doesn't "block" the UI
 	{
-		selectRandomDealer() ;
-		// ------------------------
-		//Phase 1
-		// ------------------------
-		
-		System.out.println("First Phase !!");
-		System.out.println();
-		
-		for (Player player : this.players) 
-		{
-			player.discardPairs();
-		}
-		
-		
-		System.out.println("Second Phase !!");
-		System.out.println();
-		// ------------------------
-		// Phase 2
-		// ------------------------
-		
-		
-		
+		selectRandomDealer();
 	}
 	
 

@@ -26,9 +26,9 @@ public class Window extends JFrame implements ActionListener{
 	private JPanel panelStats;
 	private JPanel panelPairs;
 	
-	private int offset = 30;
+	private int offset = 24;
 	private int cardWidth = 70;
-	private int cardHeigth = (int)(cardWidth*(726.0/500.0));
+	private int cardHeight = (int)(cardWidth*(726.0/500.0));
 	
 	
 	public Window()
@@ -77,9 +77,6 @@ public class Window extends JFrame implements ActionListener{
 		gbc_panel_2.gridy = 3;
 		panel.add(panel_2, gbc_panel_2);
 		panel_2.setLayout(new BorderLayout(0, 0));
-		
-		JLabel lblNewLabel = new JLabel();
-		panel_2.add(lblNewLabel, BorderLayout.EAST);
 				
 		
 		//Player 1 (The human)
@@ -94,9 +91,6 @@ public class Window extends JFrame implements ActionListener{
 		panelSouthPlayerHand.setBackground(Color.RED);
 		panel.add(panelSouthPlayerHand,gbcSouth);
 		
-
-		JLayeredPane layeredPane = new JLayeredPane();
-		panelSouthPlayerHand.add(layeredPane);
 		
 		
 		// Player 2
@@ -174,37 +168,120 @@ public class Window extends JFrame implements ActionListener{
 		}
 	}
 	
+	
+	public void pairPhase()
+	{
+		
+	}
+	
+	
+	
 	public void updateHands()
 	{
+		// -----------------------
 		// Player 1 (Human)
+		// -----------------------
 		panelSouthPlayerHand.removeAll();
 		panelSouthPlayerHand.setLayout(new BorderLayout());
+		JLayeredPane layeredPaneSouth= new JLayeredPane();
 		
-		JLayeredPane layeredPane= new JLayeredPane();
-		layeredPane.setPreferredSize(new Dimension(X_SIZE/2, Y_SIZE/4 - 20));
+		layeredPaneSouth.setPreferredSize(new Dimension(X_SIZE/2, Y_SIZE/4 - 20));
 		
 		for (int i =0; i<game.getPlayers().get(0).getCardCount();i++)
 		{
-			ImageIcon icon = ResizeImage.sizedImage(game.getPlayers().get(0).getHand().getCard(i), cardWidth, cardHeigth);
+			ImageIcon icon = ResizeImage.sizedImage(game.getPlayers().get(0).getHand().getCard(i), cardWidth, cardHeight);
 			JLabel cardLabel = new JLabel(icon);
 			cardLabel.setBounds(((X_SIZE/2)-((game.getPlayers().get(0).getCardCount()-1)*offset+cardWidth))/2 + i*offset,
-					40,cardWidth, cardHeigth);
-			layeredPane.add(cardLabel, Integer.valueOf(i));
+					40,cardWidth, cardHeight);
+			layeredPaneSouth.add(cardLabel, Integer.valueOf(i));
 		}
 		
-		panelSouthPlayerHand.add(layeredPane, BorderLayout.SOUTH);
+		panelSouthPlayerHand.add(layeredPaneSouth, BorderLayout.SOUTH);
 		
 		panelSouthPlayerHand.revalidate();
 		panelSouthPlayerHand.repaint();
 		
+		JPanel cardCountPanel = new JPanel(new FlowLayout());
+		JLabel countLabel = new JLabel(game.getPlayers().get(0).getCardCount()+" cards");
+		countLabel.setForeground(Color.YELLOW);
+		cardCountPanel.add(countLabel);
+		countLabel.setFont(new Font("Serif", Font.PLAIN, 20));
+		panelSouthPlayerHand.add(cardCountPanel, BorderLayout.NORTH);
+		
+		
+		// -----------------------
 		// Player 2
+		// -----------------------
+		panelWestPlayerHand.removeAll();
+		panelWestPlayerHand.setLayout(new BorderLayout());
+		JLayeredPane layeredPaneWest= new JLayeredPane();
+
 		
+		layeredPaneWest.setPreferredSize(new Dimension(X_SIZE/4, Y_SIZE/2 - 20));
 		
+		for (int i =0; i<game.getPlayers().get(1).getCardCount();i++)
+		{
+			ImageIcon icon = ImageUtil.rotateImageIcon(ResizeImage.sizedImage("/resources/cards/CARDBACK.png", cardWidth, cardHeight),90);
+			JLabel cardLabel = new JLabel(icon);
+			cardLabel.setBounds(10,
+					((Y_SIZE/2)-((game.getPlayers().get(1).getCardCount()-1)*offset+cardWidth))/2 + i*offset,
+					cardHeight, cardWidth);
+			layeredPaneWest.add(cardLabel, Integer.valueOf(i));
+		}
+		
+		panelWestPlayerHand.add(layeredPaneWest, BorderLayout.WEST);
+		
+		panelWestPlayerHand.revalidate();
+		panelWestPlayerHand.repaint();
+		
+		// -----------------------
 		// Player 3
+		// -----------------------
+		panelNorthPlayerHand.removeAll();
+		panelNorthPlayerHand.setLayout(new BorderLayout());
+		JLayeredPane layeredPaneNorth= new JLayeredPane();
+
 		
+		layeredPaneNorth.setPreferredSize(new Dimension(X_SIZE/2, Y_SIZE/4 - 20));
 		
+		for (int i =0; i<game.getPlayers().get(2).getCardCount();i++)
+		{
+			ImageIcon icon = ResizeImage.sizedImage("/resources/cards/CARDBACK.png", cardWidth, cardHeight);
+			JLabel cardLabel = new JLabel(icon);
+			cardLabel.setBounds(((X_SIZE/2)-((game.getPlayers().get(2).getCardCount()-1)*offset+cardWidth))/2 + i*offset,
+					Y_SIZE/4 - 60 - cardHeight ,cardWidth, cardHeight);
+			layeredPaneNorth.add(cardLabel, i);
+		}
+		
+		panelNorthPlayerHand.add(layeredPaneNorth, BorderLayout.NORTH);
+		
+		panelNorthPlayerHand.revalidate();
+		panelNorthPlayerHand.repaint();
+		
+		// -----------------------
 		// Player 4
+		// -----------------------
+		panelEastPlayerHand.removeAll();
+		panelEastPlayerHand.setLayout(new BorderLayout());
+		JLayeredPane layeredPaneEast= new JLayeredPane();
+
 		
+		layeredPaneEast.setPreferredSize(new Dimension(X_SIZE/4, Y_SIZE/2 - 20));
+		
+		for (int i =0; i<game.getPlayers().get(3).getCardCount();i++)
+		{
+			ImageIcon icon = ImageUtil.rotateImageIcon(ResizeImage.sizedImage("/resources/cards/CARDBACK.png", cardWidth, cardHeight),90);
+			JLabel cardLabel = new JLabel(icon);
+			cardLabel.setBounds(X_SIZE/4 -10 - cardHeight,
+					((Y_SIZE/2)-((game.getPlayers().get(3).getCardCount()-1)*offset+cardWidth))/2 + i*offset,
+					cardHeight, cardWidth);
+			layeredPaneEast.add(cardLabel, Integer.valueOf(i));
+		}
+		
+		panelEastPlayerHand.add(layeredPaneEast, BorderLayout.EAST);
+		
+		panelEastPlayerHand.revalidate();
+		panelEastPlayerHand.repaint();
 		
 	}
 }
