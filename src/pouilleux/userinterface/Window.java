@@ -27,8 +27,8 @@ public class Window extends JFrame implements ActionListener{
 	private JPanel panelPairs;
 	
 	private int offset = 30;
-	
-	private FlowLayout handLayout = new FlowLayout(FlowLayout.CENTER);
+	private int cardWidth = 70;
+	private int cardHeigth = (int)(cardWidth*(726.0/500.0));
 	
 	
 	public Window()
@@ -178,14 +178,21 @@ public class Window extends JFrame implements ActionListener{
 	{
 		// Player 1 (Human)
 		panelSouthPlayerHand.removeAll();
-		panelSouthPlayerHand.setLayout(handLayout);
+		panelSouthPlayerHand.setLayout(new BorderLayout());
 		
-		for (Card card: (game.getPlayers().get(0).getHand().getAllCards()))
+		JLayeredPane layeredPane= new JLayeredPane();
+		layeredPane.setPreferredSize(new Dimension(X_SIZE/2, Y_SIZE/4 - 20));
+		
+		for (int i =0; i<game.getPlayers().get(0).getCardCount();i++)
 		{
-			ImageIcon icon = ResizeImage.sizedImage(card, 50, 73);
+			ImageIcon icon = ResizeImage.sizedImage(game.getPlayers().get(0).getHand().getCard(i), cardWidth, cardHeigth);
 			JLabel cardLabel = new JLabel(icon);
-			panelSouthPlayerHand.add(cardLabel);
+			cardLabel.setBounds(((X_SIZE/2)-((game.getPlayers().get(0).getCardCount()-1)*offset+cardWidth))/2 + i*offset,
+					40,cardWidth, cardHeigth);
+			layeredPane.add(cardLabel, Integer.valueOf(i));
 		}
+		
+		panelSouthPlayerHand.add(layeredPane, BorderLayout.SOUTH);
 		
 		panelSouthPlayerHand.revalidate();
 		panelSouthPlayerHand.repaint();
