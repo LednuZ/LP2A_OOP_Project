@@ -2,6 +2,7 @@ package pouilleux.userinterface;
 
 import javax.swing.*;
 
+import pouilleux.card.Card;
 import pouilleux.game.Game;
 
 import java.awt.*;
@@ -25,6 +26,9 @@ public class Window extends JFrame implements ActionListener{
 	private JPanel panelStats;
 	private JPanel panelPairs;
 	
+	private int offset = 30;
+	
+	private FlowLayout handLayout = new FlowLayout(FlowLayout.CENTER);
 	
 	
 	public Window()
@@ -162,18 +166,26 @@ public class Window extends JFrame implements ActionListener{
 			panelStats.revalidate();
 			panelStats.repaint();
 			
-			SwingUtilities.invokeLater(() -> { // a way to make the button disapear before the game starts
+			SwingUtilities.invokeLater(() -> { // a way to make the button disappear before the game starts
 		        game.startGameUI();
 		    });
 			
-			
+			this.updateHands();
 		}
 	}
 	
 	public void updateHands()
 	{
 		// Player 1 (Human)
+		panelSouthPlayerHand.removeAll();
+		panelSouthPlayerHand.setLayout(handLayout);
 		
+		for (Card card: (game.getPlayers().get(0).getHand().getAllCards()))
+		{
+			ImageIcon icon = ResizeImage.sizedImage(card, 50, 73);
+			JLabel cardLabel = new JLabel(icon);
+			panelSouthPlayerHand.add(cardLabel);
+		}
 		
 		panelSouthPlayerHand.revalidate();
 		panelSouthPlayerHand.repaint();
