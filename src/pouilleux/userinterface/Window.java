@@ -457,10 +457,12 @@ public class Window extends JFrame implements ActionListener{
 	        String key = faceUp ? card.toString() : "BACK";
 	        ImageIcon icon = imageCache.get(key);
 	        
-        	JLabel label = new JLabel(icon);
+        	JLabel label = new JLabel(icon); // It's the card
 	        
 	        if (isSouth)
 	        {
+	        	// Make my cards clic-able for pairs
+	        	
 	        	int x = i * offset + ((X_SIZE)/4-((hand.size()-1)*offset+cardWidth)/2);
 	        	int y = selectedCardsIndices.contains(i) ? 20 : 50; // get an offset if card selectionned
 	        	
@@ -474,6 +476,8 @@ public class Window extends JFrame implements ActionListener{
         			}
         		});
         		layeredPane.add(label,Integer.valueOf(i));
+        		
+        		
 	        }
 	        else if (direction.equals("WEST") || direction.equals("EAST"))
 	        {
@@ -482,38 +486,44 @@ public class Window extends JFrame implements ActionListener{
 	        	int y = i * offset + ((Y_SIZE)/4-((hand.size()-1)*offset+cardWidth)/2);
 	        	
 	        	label.setBounds(x, y,cardHeight, cardWidth);
-	        	if (game.nextPlayer(0) == 1)
+	        	
+	        	
+	        	// We want to set cards clic-able here
+	        	if (direction.equals("WEST"))
 	        	{
-	        		final int cardIndex = i;
-	        		label.addMouseListener(new MouseAdapter() {
+        			final int cardIndex = i;
+        			label.addMouseListener(new MouseAdapter() {
 	        			@Override
 	        			public void mouseClicked(MouseEvent e) {
 	        				if (pickPhase) {
 	        					game.getPlayers().get(0)
-	        						.pickCard(game.getPlayers().get(1), cardIndex);
+	        					.pickCard(game.getPlayers().get(1), cardIndex);
 	        					pickPhase = false;
 	        					updateHands();
 	        					pairPhase();
 	        				}
 	        			}
-	        		});
+        			});
 	        		layeredPane.add(label,Integer.valueOf(i));
 	        	}
-	        	else if (game.nextPlayer(0) == 3)
-	        	{
-	        		final int cardIndex = i;
-	        		label.addMouseListener(new MouseAdapter() {
-	        			@Override
-	        			public void mouseClicked(MouseEvent e) {
-	        				if (pickPhase) {
-	        					game.getPlayers().get(0)
-	        						.pickCard(game.getPlayers().get(3), cardIndex);
-	        					pickPhase = false;
-	        					updateHands();
-	        					pairPhase();
-	        				}
-	        			}
-	        		});
+	        	else if (direction.equals("EAST"))
+	        	{	        		
+	        		if (game.nextPlayer(0) == 3)
+	        		{
+		        		final int cardIndex = i;
+		        		label.addMouseListener(new MouseAdapter() {
+		        			@Override
+		        			public void mouseClicked(MouseEvent e) {
+		        				if (pickPhase) {
+		        					game.getPlayers().get(0)
+		        						.pickCard(game.getPlayers().get(3), cardIndex);
+		        					pickPhase = false;
+		        					updateHands();
+		        					pairPhase();
+		        				}
+		        			}
+		        		});
+	        		}
 	        		layeredPane.add(label);
 	        	}
 	        }
