@@ -1,5 +1,6 @@
 package pouilleux.players;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import pouilleux.card.*;
@@ -59,7 +60,7 @@ public class Player {
 		return this.getHand().getCount() ==0 ; 
 	}
 	
-	public void discardPairs() { 
+	public ArrayList<Card[]> discardPairs() { 
 		int card1, card2 = -1;
 		boolean secondCard = false;
 		boolean pairMode = true;
@@ -117,6 +118,8 @@ public class Player {
 		{
 			System.out.println("\n\nYou won !!!\n\n");
 		}
+		
+		return null;
 	}
 	
 	

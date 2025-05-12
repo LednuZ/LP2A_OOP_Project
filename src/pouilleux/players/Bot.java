@@ -13,7 +13,7 @@ public class Bot extends Player{
 	}
 	
 	@Override
-	public void discardPairs() { 
+	public ArrayList<Card[]> discardPairs() { 
 		// We search all the pairs to delete them
 		ArrayList<Card[]> foundPairs = new ArrayList<Card[]>();
 		for (int i=0; i<this.getCardCount() - 1;i++)
@@ -30,6 +30,8 @@ public class Bot extends Player{
 		for (Card[] pair : foundPairs) {
 			this.hand.deletePair(pair[0], pair[1]);
 		}
+		
+		return foundPairs;
 	}
 	
 	

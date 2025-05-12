@@ -117,12 +117,22 @@ public class Game {
 			leftPlayer = (leftPlayer + 1) %4;
 		}
 		return leftPlayer ;
-		
+	}
+	
+	public int nextPlayerTurn() 
+	{
+		currentPlayer = nextPlayer();
+		return currentPlayer;
 	}
 	
 	public ArrayList<Player> getPlayers()
 	{
 		return this.players;
+	}
+	
+	public int getCurrentPlayer()
+	{
+		return this.currentPlayer;
 	}
 
 }

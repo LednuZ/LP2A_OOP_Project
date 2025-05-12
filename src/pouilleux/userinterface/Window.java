@@ -20,6 +20,7 @@ public class Window extends JFrame implements ActionListener{
 	private final int Y_SIZE = 720; 
 	private JTextField textField;
 	private JButton submitButton;
+	private JButton endTurn;
 	private JPanel panelNorthPlayerHand;
 	private JPanel panelSouthPlayerHand;
 	private JPanel panelEastPlayerHand;
@@ -135,7 +136,7 @@ public class Window extends JFrame implements ActionListener{
 		
 		// Discarded Pairs
 		GridBagConstraints gbcPairs = new GridBagConstraints();
-		panelPairs = new JPanel();
+		panelPairs = new JPanel(new FlowLayout());
 		panelPairs.setOpaque(false);
 		gbcPairs.gridx = 1; // column
 		gbcPairs.gridy = 1; // row
@@ -167,10 +168,8 @@ public class Window extends JFrame implements ActionListener{
 			panelStats.revalidate();
 			panelStats.repaint();
 			
-			SwingUtilities.invokeLater(() -> { // a way to make the button disappear before the game starts
-		        game.startGameUI();
-		    });
-			
+		    game.startGameUI();
+		    		
 			
 			// Player 2 Name
 			JPanel panelSW = new JPanel();
@@ -229,17 +228,48 @@ public class Window extends JFrame implements ActionListener{
 			panelSE.add(label4,BorderLayout.NORTH);
 			
 			this.updateHands();
+			for (int i=1; i<4; i++)
+			{
+				ArrayList<Card[]> pairs = this.game.getPlayers().get(i).discardPairs();
+				for (Card[] pair : pairs)
+				{
+					this.printDiscardedPairs(pair);
+					this.updateHands();
+				}
+			}
 			
+			this.pairPhase();
+		}
+		
+		
+		
+		
+		else if (e.getSource() == endTurn)
+		{
+			this.pairPhase = false;
+			panelStats.removeAll();
+			
+			panelStats.revalidate();
+			panelStats.repaint();
 		}
 	}
 	
 	
 	public void pairPhase()
 	{
+		this.pairPhase = true;
+		panelStats.removeAll();
+		panelStats.add(new JLabel("Pairs Selection"));
 		
+		endTurn = new JButton("End Turn");
+		endTurn.addActionListener(this);
+		panelStats.add(endTurn);
 	}
 	
-	
+	public void playTurn()
+	{
+		
+	}
 	
 	public void updateHands()
 	{
@@ -286,6 +316,7 @@ public class Window extends JFrame implements ActionListener{
 			                if (c1.formPair(c2)) {
 			                    game.getPlayers().get(0).getHand().deletePair(c1, c2);
 			                    selectedCardsIndices.clear();
+			                    printDiscardedPairs(new Card[] {c1, c2});
 			                    updateHands(); 
 			                } else {
 			                    selectedCardsIndices.clear();
@@ -411,6 +442,20 @@ public class Window extends JFrame implements ActionListener{
 		
 		panelEastPlayerHand.revalidate();
 		panelEastPlayerHand.repaint();
+		
+	}
+
+	public void printDiscardedPairs(Card[] pair)
+	{
+		panelPairs.removeAll();
+		ImageIcon icon1 = ResizeImage.sizedImage(pair[0], cardWidth, cardHeight);
+		JLabel cardLabel1 = new JLabel(icon1);
+		ImageIcon icon2 = ResizeImage.sizedImage(pair[1], cardWidth, cardHeight);
+		JLabel cardLabel2 = new JLabel(icon2);
+		panelPairs.add(cardLabel1);
+		panelPairs.add(cardLabel2);
+		panelPairs.revalidate();
+		panelPairs.repaint();
 		
 	}
 }
