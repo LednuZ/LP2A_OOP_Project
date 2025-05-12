@@ -3,12 +3,19 @@ package pouilleux.userinterface;
 import javax.swing.*;
 
 import pouilleux.card.Card;
+import pouilleux.card.Deck;
 import pouilleux.game.Game;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.awt.event.ActionEvent;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.List;
 
 
 public class Window extends JFrame implements ActionListener{
@@ -21,6 +28,7 @@ public class Window extends JFrame implements ActionListener{
 	private JTextField textField;
 	private JButton submitButton;
 	private JButton endTurn;
+	private JButton endFirstPhase;
 	private JPanel panelNorthPlayerHand;
 	private JPanel panelSouthPlayerHand;
 	private JPanel panelEastPlayerHand;
@@ -30,10 +38,13 @@ public class Window extends JFrame implements ActionListener{
 	private JPanel panel;
 	
 	private boolean pairPhase = false;
+	private boolean pickPhase = false;
+	
 	private int offset = 24;
 	private int cardWidth = 70;
 	private int cardHeight = (int)(cardWidth*(726.0/500.0));
 	
+	private final Map<String, ImageIcon> imageCache = new HashMap<>(); // avoid to search each time for images
 	
 	private java.util.List<Integer> selectedCardsIndices = new ArrayList<>();
 	
@@ -43,7 +54,7 @@ public class Window extends JFrame implements ActionListener{
 		this.setTitle("\"Pouilleux\" Game");
 		this.setResizable(false); // avoid window resizing
 		this.setSize(X_SIZE,Y_SIZE); // sets x-dimension and y-dimension
-		ImageIcon image = new ImageIcon("resource/PNG-cacrds-1.3/jack_of_spades2.png");
+		ImageIcon image = new ImageIcon("resource/cards/11SPADE.png");
 		this.setIconImage(image.getImage());
 
 		GridBagLayout gbl_panel = new GridBagLayout();
@@ -148,7 +159,8 @@ public class Window extends JFrame implements ActionListener{
 		panel.add(panelPairs,gbcPairs);
 		
 		
-		
+		this.preloadCardImages();
+
 		getContentPane().add(panel);
 		
 		this.setVisible(true); // makes frame visible
@@ -238,23 +250,60 @@ public class Window extends JFrame implements ActionListener{
 				}
 			}
 			
-			this.pairPhase();
+			this.firstPhase();
+			
 		}
-		
 		
 		
 		
 		else if (e.getSource() == endTurn)
 		{
 			this.pairPhase = false;
-			panelStats.removeAll();
 			
+			panelStats.removeAll();
+			selectedCardsIndices.clear();
+
+			game.nextPlayerTurn();
 			panelStats.revalidate();
 			panelStats.repaint();
+			
+			this.playTurn();
+		}
+		
+		else if (e.getSource() == endFirstPhase)
+		{
+			this.pairPhase = false;
+			
+			panelStats.removeAll();
+			selectedCardsIndices.clear();
+			panelStats.revalidate();
+			panelStats.repaint();
+
+			this.playFirstTurn();
 		}
 	}
 	
 	
+	
+	/**
+	 * This phase corresponds to the First phase where everyone discards all of their pairs
+	 * It is followed by the First Turn
+	 */
+	public void firstPhase()
+	{
+		this.pairPhase = true;
+		panelStats.removeAll();
+		panelStats.add(new JLabel("Pairs Selection"));
+		
+		endFirstPhase = new JButton("End First Phase");
+		endFirstPhase.addActionListener(this);
+		panelStats.add(endFirstPhase);
+	}
+	
+	/**
+	 * We choose the pair that we want to discard
+	 * It's followed by playTurn
+	 */
 	public void pairPhase()
 	{
 		this.pairPhase = true;
@@ -266,184 +315,99 @@ public class Window extends JFrame implements ActionListener{
 		panelStats.add(endTurn);
 	}
 	
+	
+	/**
+	 * The first turn starts on the randomly selected dealer, until we're on the human player
+	 * It is followed by the pick Phase
+	 */
+	public void playFirstTurn() // since we don't always start the game after player 1
+	{
+		if (game.getCurrentPlayer()!=0)
+		{
+			for (int i=game.getCurrentPlayer(); i<4; i++)
+			{
+				
+				game.getPlayers().get(i).playTurn(game.getPlayers().get(game.nextPlayer()));
+				game.nextPlayerTurn();
+				updateHands();
+			}
+		}
+		
+		pickPhase();
+	}
+	
+	
+	/**
+	 * We do a complete turn on each of the other players
+	 * It's followed by the Pick Phase
+	 */
 	public void playTurn()
 	{
-		
+		for (int i=1; i<4; i++)
+		{
+			if (game.getPlayers().get(i).getCardCount()!=0) 
+				game.getPlayers().get(i).playTurn(game.getPlayers().get(game.nextPlayer()));
+			updateHands();
+			game.nextPlayerTurn();
+		}
+		pickPhase();
 	}
 	
-	public void updateHands()
+	
+	/**
+	 * This is when the player pick a card from the player on his left
+	 * It's followed by the Pair Phase
+	 */
+	public void pickPhase()
 	{
-		// -----------------------
-		// Player 1 (Human)
-		// -----------------------
-		panelSouthPlayerHand.removeAll();
-		panelSouthPlayerHand.setLayout(new BorderLayout());
-		JLayeredPane layeredPaneSouth= new JLayeredPane();
-		
-		layeredPaneSouth.setPreferredSize(new Dimension(X_SIZE/2, Y_SIZE/4 - 20));
-		
-		for (int i =0; i<game.getPlayers().get(0).getCardCount();i++)
+		panelStats.removeAll();
+		if (!game.isFinished()) 
 		{
-			ImageIcon icon = ResizeImage.sizedImage(game.getPlayers().get(0).getHand().getCard(i), cardWidth, cardHeight);
-			JLabel cardLabel = new JLabel(icon);
-			cardLabel.setBounds(((X_SIZE/2)-((game.getPlayers().get(0).getCardCount()-1)*offset+cardWidth))/2 + i*offset,
-					40,cardWidth, cardHeight);
-			cardLabel.putClientProperty("index", i);  // We get the index when clicked on
-
-		    cardLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-		        @Override
-		        public void mouseClicked(java.awt.event.MouseEvent evt) {
-		            int index = (int) ((JLabel) evt.getSource()).getClientProperty("index");
-
-		            if (pairPhase)
-		            {
-			            if (selectedCardsIndices.contains(index)) {
-			                selectedCardsIndices.remove((Integer) index);
-			                cardLabel.setLocation(cardLabel.getX(), cardLabel.getY() + 20); // Card goes back down
-			            } else {
-			                if (selectedCardsIndices.size() < 2) {
-			                    selectedCardsIndices.add(index);
-			                    cardLabel.setLocation(cardLabel.getX(), cardLabel.getY() - 20); // card goes up
-			                }
-			            }
-	
-			            if (selectedCardsIndices.size() == 2) {
-			                int idx1 = selectedCardsIndices.get(0);
-			                int idx2 = selectedCardsIndices.get(1);
-			                Card c1 = game.getPlayers().get(0).getHand().getCard(idx1);
-			                Card c2 = game.getPlayers().get(0).getHand().getCard(idx2);
-	
-			                if (c1.formPair(c2)) {
-			                    game.getPlayers().get(0).getHand().deletePair(c1, c2);
-			                    selectedCardsIndices.clear();
-			                    printDiscardedPairs(new Card[] {c1, c2});
-			                    updateHands(); 
-			                } else {
-			                    selectedCardsIndices.clear();
-			                    updateHands(); 
-			                }
-			            }
-		            }
-		        }
-		    });
-			layeredPaneSouth.add(cardLabel, Integer.valueOf(i));
+			pickPhase = true;
+			JLabel info = new JLabel("Select a card from the next player ! (Clockwise)");
+			info.setFont(new Font("Arial", Font.PLAIN, 20));
+			info.setForeground(Color.yellow);
 			
+			panelStats.add(info);
+			panel.revalidate();
+			panel.repaint();			
 		}
-		
-		panelSouthPlayerHand.add(layeredPaneSouth, BorderLayout.SOUTH);
-		
-		
-		JPanel cardCountPanel1 = new JPanel(new FlowLayout());
-		cardCountPanel1.setOpaque(false);
-		JLabel countLabel1 = new JLabel(game.getPlayers().get(0).getCardCount()+" cards");
-		countLabel1.setForeground(Color.YELLOW);
-		cardCountPanel1.add(countLabel1);
-		countLabel1.setFont(new Font("Arial", Font.PLAIN, 20));
-		panelSouthPlayerHand.add(cardCountPanel1, BorderLayout.NORTH);
-		
-		panelSouthPlayerHand.revalidate();
-		panelSouthPlayerHand.repaint();
-		
-		// -----------------------
-		// Player 2
-		// -----------------------
-		panelWestPlayerHand.removeAll();
-		panelWestPlayerHand.setLayout(new BorderLayout());
-		JLayeredPane layeredPaneWest= new JLayeredPane();
-
-		
-		layeredPaneWest.setPreferredSize(new Dimension(X_SIZE/4, Y_SIZE/2 - 20));
-		
-		for (int i =0; i<game.getPlayers().get(1).getCardCount();i++)
+		else if (game.getPlayers().get(0).hasFinished())
 		{
-			ImageIcon icon = ImageUtil.rotateImageIcon(ResizeImage.sizedImage("/resources/cards/CARDBACK.png", cardWidth, cardHeight),90);
-			JLabel cardLabel = new JLabel(icon);
-			cardLabel.setBounds(10,
-					((Y_SIZE/2)-((game.getPlayers().get(1).getCardCount()-1)*offset+cardWidth))/2 + i*offset,
-					cardHeight, cardWidth);
-			layeredPaneWest.add(cardLabel, Integer.valueOf(i));
+			JLabel info = new JLabel("Congratulations !!! YOU WON !!!");
+			info.setFont(new Font("Arial", Font.PLAIN, 20));
+			info.setForeground(Color.yellow);
+			updateHands();
+			panelStats.add(info);
+			panel.revalidate();
+			panel.repaint();
+		} else {
+			JLabel info = new JLabel("GAME OVER !");
+			info.setFont(new Font("Arial", Font.PLAIN, 20));
+			info.setForeground(Color.yellow);
+			updateHands();
+			panelStats.add(info);
+			panel.revalidate();
+			panel.repaint();
 		}
-		
-		panelWestPlayerHand.add(layeredPaneWest, BorderLayout.WEST);
-		
-		JPanel cardCountPanel2 = new JPanel(new BorderLayout());
-		cardCountPanel2.setOpaque(false);
-		JLabel countLabel2 = new JLabel(game.getPlayers().get(1).getCardCount()+" cards");
-		countLabel2.setForeground(Color.YELLOW);
-		cardCountPanel2.add(countLabel2, BorderLayout.CENTER);
-		countLabel2.setFont(new Font("Arial", Font.PLAIN, 20));
-		panelWestPlayerHand.add(cardCountPanel2, BorderLayout.EAST);
-		
-		panelWestPlayerHand.revalidate();
-		panelWestPlayerHand.repaint();
-		
-		// -----------------------
-		// Player 3
-		// -----------------------
-		panelNorthPlayerHand.removeAll();
-		panelNorthPlayerHand.setLayout(new BorderLayout());
-		JLayeredPane layeredPaneNorth= new JLayeredPane();
-
-		
-		layeredPaneNorth.setPreferredSize(new Dimension(X_SIZE/2, Y_SIZE/4 - 20));
-		
-		for (int i =0; i<game.getPlayers().get(2).getCardCount();i++)
-		{
-			ImageIcon icon = ResizeImage.sizedImage("/resources/cards/CARDBACK.png", cardWidth, cardHeight);
-			JLabel cardLabel = new JLabel(icon);
-			cardLabel.setBounds(((X_SIZE/2)-((game.getPlayers().get(2).getCardCount()-1)*offset+cardWidth))/2 + i*offset,
-					Y_SIZE/4 - 60 - cardHeight ,cardWidth, cardHeight);
-			layeredPaneNorth.add(cardLabel, i);
-		}
-		
-		panelNorthPlayerHand.add(layeredPaneNorth, BorderLayout.NORTH);
-		
-		JPanel cardCountPanel3 = new JPanel(new FlowLayout());
-		cardCountPanel3.setOpaque(false);
-		JLabel countLabel3 = new JLabel(game.getPlayers().get(2).getCardCount()+" cards");
-		countLabel3.setForeground(Color.YELLOW);
-		cardCountPanel3.add(countLabel3);
-		countLabel3.setFont(new Font("Arial", Font.PLAIN, 20));
-		panelNorthPlayerHand.add(cardCountPanel3, BorderLayout.SOUTH);
-		
-		panelNorthPlayerHand.revalidate();
-		panelNorthPlayerHand.repaint();
-		
-		// -----------------------
-		// Player 4
-		// -----------------------
-		panelEastPlayerHand.removeAll();
-		panelEastPlayerHand.setLayout(new BorderLayout());
-		JLayeredPane layeredPaneEast= new JLayeredPane();
-
-		
-		layeredPaneEast.setPreferredSize(new Dimension(X_SIZE/4, Y_SIZE/2 - 20));
-		
-		for (int i =0; i<game.getPlayers().get(3).getCardCount();i++)
-		{
-			ImageIcon icon = ImageUtil.rotateImageIcon(ResizeImage.sizedImage("/resources/cards/CARDBACK.png", cardWidth, cardHeight),90);
-			JLabel cardLabel = new JLabel(icon);
-			cardLabel.setBounds(X_SIZE/4 -10 - cardHeight,
-					((Y_SIZE/2)-((game.getPlayers().get(3).getCardCount()-1)*offset+cardWidth))/2 + i*offset,
-					cardHeight, cardWidth);
-			layeredPaneEast.add(cardLabel, Integer.valueOf(i));
-		}
-		
-		panelEastPlayerHand.add(layeredPaneEast, BorderLayout.EAST);
-		
-		JPanel cardCountPanel4 = new JPanel(new BorderLayout());
-		cardCountPanel4.setOpaque(false);
-		JLabel countLabel4 = new JLabel(game.getPlayers().get(3).getCardCount()+" cards");
-		countLabel4.setForeground(Color.YELLOW);
-		cardCountPanel4.add(countLabel4, BorderLayout.CENTER);
-		countLabel4.setVerticalAlignment(SwingConstants.CENTER);
-		countLabel4.setFont(new Font("Arial", Font.PLAIN, 20));
-		panelEastPlayerHand.add(cardCountPanel4, BorderLayout.WEST);
-		
-		panelEastPlayerHand.revalidate();
-		panelEastPlayerHand.repaint();
-		
 	}
+	
+	
+	
+	
+	
+	private void updateHands() {
+	    updateHandPanel(panelSouthPlayerHand, game.getPlayers().get(0).getHand().getAllCards(), "SOUTH");
+	    updateHandPanel(panelWestPlayerHand, game.getPlayers().get(1).getHand().getAllCards(), "WEST");
+	    updateHandPanel(panelNorthPlayerHand, game.getPlayers().get(2).getHand().getAllCards(), "NORTH");
+	    updateHandPanel(panelEastPlayerHand, game.getPlayers().get(3).getHand().getAllCards(), "EAST");
+	    panel.revalidate();
+	    panel.repaint();
+	}
+
+	
+	
+	
 
 	public void printDiscardedPairs(Card[] pair)
 	{
@@ -457,5 +421,199 @@ public class Window extends JFrame implements ActionListener{
 		panelPairs.revalidate();
 		panelPairs.repaint();
 		
+	}
+	
+	private void preloadCardImages() {
+	    for (Card card : (new Deck()).getAllCards()) {
+	        String key = card.toString();
+	        imageCache.put(key, ResizeImage.sizedImage(CardImage.getImageOfCard(card), cardWidth, cardHeight));
+	    }
+	    // Add the back
+	    imageCache.put("BACK", ResizeImage.sizedImage("/resources/cards/CARDBACK.png", cardWidth, cardHeight));
+	}
+	
+	
+	private void updateHandPanel(JPanel panel, List<Card> hand, String direction) {
+	    panel.removeAll();
+
+	    boolean isSouth = direction.equals("SOUTH");
+
+	    JLayeredPane layeredPane = new JLayeredPane();
+	    layeredPane.setLayout(null);
+	    if (direction.equals("NORTH") || direction.equals("SOUTH"))
+	    {
+	    	layeredPane.setPreferredSize(new Dimension(X_SIZE/2, Y_SIZE/4));	    	
+	    }
+	    else
+	    {
+	    	layeredPane.setPreferredSize(new Dimension(X_SIZE/4, Y_SIZE/2));
+	    }
+
+	    for (int i = 0; i < hand.size(); i++) 
+	    {
+	        Card card = hand.get(i);
+	        boolean faceUp = isSouth || game.isFinished();
+
+	        String key = faceUp ? card.toString() : "BACK";
+	        ImageIcon icon = imageCache.get(key);
+	        
+        	JLabel label = new JLabel(icon);
+	        
+	        if (isSouth)
+	        {
+	        	int x = i * offset + ((X_SIZE)/4-((hand.size()-1)*offset+cardWidth)/2);
+	        	int y = selectedCardsIndices.contains(i) ? 20 : 50; // get an offset if card selectionned
+	        	
+	        	label.setBounds(x, y, icon.getIconWidth(), icon.getIconHeight());
+	        	
+	        	final int cardIndex = i;
+        		label.addMouseListener(new MouseAdapter() {
+        			@Override
+        			public void mouseClicked(MouseEvent e) {
+        				if (pairPhase) toggleCardSelection(cardIndex);
+        			}
+        		});
+        		layeredPane.add(label,Integer.valueOf(i));
+	        }
+	        else if (direction.equals("WEST") || direction.equals("EAST"))
+	        {
+	        	label = new JLabel(ImageUtil.rotateImageIcon(icon, 90));
+	        	int x = direction.equals("WEST") ? 10 : X_SIZE/4 -10 - cardHeight;
+	        	int y = i * offset + ((Y_SIZE)/4-((hand.size()-1)*offset+cardWidth)/2);
+	        	
+	        	label.setBounds(x, y,cardHeight, cardWidth);
+	        	if (game.nextPlayer(0) == 1)
+	        	{
+	        		final int cardIndex = i;
+	        		label.addMouseListener(new MouseAdapter() {
+	        			@Override
+	        			public void mouseClicked(MouseEvent e) {
+	        				if (pickPhase) {
+	        					game.getPlayers().get(0)
+	        						.pickCard(game.getPlayers().get(1), cardIndex);
+	        					pickPhase = false;
+	        					updateHands();
+	        					pairPhase();
+	        				}
+	        			}
+	        		});
+	        		layeredPane.add(label,Integer.valueOf(i));
+	        	}
+	        	else if (game.nextPlayer(0) == 3)
+	        	{
+	        		final int cardIndex = i;
+	        		label.addMouseListener(new MouseAdapter() {
+	        			@Override
+	        			public void mouseClicked(MouseEvent e) {
+	        				if (pickPhase) {
+	        					game.getPlayers().get(0)
+	        						.pickCard(game.getPlayers().get(3), cardIndex);
+	        					pickPhase = false;
+	        					updateHands();
+	        					pairPhase();
+	        				}
+	        			}
+	        		});
+	        		layeredPane.add(label);
+	        	}
+	        }
+	        else if (direction.equals("NORTH"))
+	        {
+	        	int x = i * offset + ((X_SIZE)/4-((hand.size()-1)*offset+cardWidth)/2);
+	        	int y = Y_SIZE/4 -60 - cardHeight;
+	        	
+	        	label.setBounds(x, y, icon.getIconWidth(), icon.getIconHeight());
+	        	
+	        	if (game.nextPlayer(0) == 2)
+	        	{
+	        		final int cardIndex = i;
+	        		label.addMouseListener(new MouseAdapter() {
+	        			@Override
+	        			public void mouseClicked(MouseEvent e) {
+	        				if (pickPhase) {
+	        					game.getPlayers().get(0)
+	        						.pickCard(game.getPlayers().get(2), cardIndex);
+	        					pickPhase = false;
+	        					updateHands();
+	        					pairPhase();
+	        				}
+	        			}
+	        		});
+	        	}
+	        	layeredPane.add(label);
+	        }
+
+	        
+	    }
+
+	    panel.setLayout(new BorderLayout());
+	    
+	    
+	    JPanel cardCountPanel = new JPanel((direction.equals("NORTH")||direction.equals("SOUTH"))?new FlowLayout():new BorderLayout());
+	    cardCountPanel.setOpaque(false);
+	    JLabel cardCountLabel = new JLabel(hand.size()+" cards");
+	    cardCountLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+	    cardCountLabel.setForeground(Color.YELLOW);
+		cardCountPanel.add(cardCountLabel, BorderLayout.CENTER);
+		
+		
+	    if (direction.equals("SOUTH"))
+	    {
+	    	panel.add(layeredPane, BorderLayout.SOUTH);
+			panel.add(cardCountPanel, BorderLayout.NORTH);
+
+	    }
+	    else if (direction.equals("WEST"))
+	    {
+	    	panel.add(layeredPane, BorderLayout.WEST);
+			panel.add(cardCountPanel, BorderLayout.EAST);
+
+	    }
+	    else if (direction.equals("NORTH"))
+	    {
+	    	panel.add(layeredPane, BorderLayout.NORTH);
+			panel.add(cardCountPanel, BorderLayout.SOUTH);
+
+	    }
+	    else if (direction.equals("EAST"))
+	    {
+	    	panel.add(layeredPane, BorderLayout.EAST);
+			panel.add(cardCountPanel, BorderLayout.WEST);
+
+	    }
+	    
+		
+
+
+	    
+	    
+	    panelPairs.revalidate();
+		panelPairs.repaint();
+	}
+	
+	private void toggleCardSelection(int index) {
+	    if (selectedCardsIndices.contains(index)) { // remove card if clicked a second time
+	        selectedCardsIndices.remove(Integer.valueOf(index));
+	    } else if (selectedCardsIndices.size()<2) // add card
+	    {
+	    	selectedCardsIndices.add(index);	    	
+	    }
+	    
+	    if (selectedCardsIndices.size() == 2) {
+            int idx1 = selectedCardsIndices.get(0);
+            int idx2 = selectedCardsIndices.get(1);
+            Card c1 = game.getPlayers().get(0).getHand().getCard(idx1); // get(0) since we only work on player's 1 hand
+            Card c2 = game.getPlayers().get(0).getHand().getCard(idx2);
+
+            if (c1.formPair(c2)) {
+                game.getPlayers().get(0).getHand().deletePair(c1, c2);
+                selectedCardsIndices.clear();
+                printDiscardedPairs(new Card[] {c1, c2});
+            } else {
+                selectedCardsIndices.clear();
+            }
+        }
+	    
+	    updateHandPanel(panelSouthPlayerHand, game.getPlayers().get(0).getHand().getAllCards(), "SOUTH");
 	}
 }

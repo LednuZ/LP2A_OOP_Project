@@ -56,6 +56,7 @@ public class Game {
         if (count ==3){
             returnedValue = true;
         }
+        if (players.get(0).getCardCount()==0) returnedValue = true;
 
         return returnedValue ;       
 
@@ -119,6 +120,22 @@ public class Game {
 		return leftPlayer ;
 	}
 	
+	
+	/**
+	 * We can know the next player to play after another
+	 * @param indexPlayer
+	 * @return
+	 */
+	public int nextPlayer(int indexPlayer) {
+		int leftPlayer = (indexPlayer+1)%4; 
+		while (players.get(leftPlayer).hasFinished())
+		{
+			leftPlayer = (leftPlayer + 1) %4;
+		}
+		return leftPlayer ;
+	}
+	
+	
 	public int nextPlayerTurn() 
 	{
 		currentPlayer = nextPlayer();
@@ -134,5 +151,6 @@ public class Game {
 	{
 		return this.currentPlayer;
 	}
+	
 
 }
