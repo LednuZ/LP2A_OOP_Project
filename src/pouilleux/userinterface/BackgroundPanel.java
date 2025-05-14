@@ -4,7 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class BackgroundPanel extends JPanel {
-    private Image backgroundImage;
+    private static final long serialVersionUID = 1L;
+	private Image backgroundImage;
 
     public BackgroundPanel(String imagePath) {
         backgroundImage = new ImageIcon(getClass().getResource(imagePath)).getImage();
